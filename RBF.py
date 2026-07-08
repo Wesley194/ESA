@@ -1,5 +1,5 @@
 import numpy as np
-class RBF :
+class RBFModel :
     def __init__(self):
         self.X_train = None
         self.omega = None
@@ -31,7 +31,7 @@ class RBF :
 #test:
 #X_sample = np.array([[1.0, 2.0], [3.0, 5.0], [2.0, 1.0], [5.0, 4.0], [4.0, 2.0]])
 #F_true = np.array([12.5, 35.1, 8.2, 42.0, 21.4])
-#rbf_s = RBF()
+#rbf_s = RBFModel()
 #rbf_s.fit(X_sample, F_true)
 #X_new = np.array([[2.5, 3.0], [4.5, 3.5]])
 #predict = rbf_s.predict(X_new)
