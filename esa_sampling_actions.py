@@ -27,7 +27,7 @@ from RBF import RBFModel
 def jade(surrogate, lb: np.ndarray, ub: np.ndarray) -> np.ndarray:
     bounds = list(zip(lb.tolist(), ub.tolist()))
     try:
-        res = differential_evolution(surrogate.predict_single, bounds, popsize=15, maxiter=200, tol=1e-5)
+        res = differential_evolution(surrogate.predict, bounds, popsize=15, maxiter=200, tol=1e-5)
         return np.clip(res.x, lb, ub)
     except Exception:
         return lb + (ub - lb) * 0.5
@@ -152,13 +152,13 @@ def a4_trust_region(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callable,lb: np.
         rbf_l.fit(X_tr, y_tr)
 
         #記錄x_best尚未更新前的代理模型預測值
-        f_pred_xbest_before = rbf_l.predict_single(x_best)
+        f_pred_xbest_before = rbf_l.predict(x_best)
 
         x_c = jade(rbf_l, tr_lb, tr_ub)
         f_c = real_f(x_c)
         new_data.append((x_c.copy(), f_c))
 
-        f_pred_xc = rbf_l.predict_single(x_c)
+        f_pred_xc = rbf_l.predict(x_c)
         f_before  = f_best
 
         #更新最佳值
