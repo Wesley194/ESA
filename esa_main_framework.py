@@ -98,9 +98,9 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
                 rbf_eval = RBFModel()
                 rbf_eval.fit(DB_X[-51:-1], DB_y[-51:-1])
                 
-                f_pred = rbf_eval.predict(DB_X[-1])
+                f_pred = rbf_eval.predict_single(DB_X[-1])
                 f_true = DB_y[-1]
-                error = abs(f_pred[0] - f_true) / (abs(f_pred[0]) + abs(f_true) + 1e-8)
+                error = abs(f_pred - f_true) / (abs(f_pred) + abs(f_true) + 1e-8)
                 recent_rbf_error = float(error)
 
             if improved:
