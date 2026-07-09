@@ -26,15 +26,23 @@ from RBF import RBFModel
 #參考論文Page 720的Algorithm 3
 def jade(surrogate, lb: np.ndarray, ub: np.ndarray) -> np.ndarray:
     bounds = list(zip(lb.tolist(), ub.tolist()))
+    
+    def vectorized_predict(x_transposed):
+        x_normal = x_transposed.T
+        return surrogate.predict(x_normal)
+
     try:
         res = differential_evolution(
-            surrogate.predict_single, 
+            vectorized_predict,
             bounds, 
             popsize=3,
             maxiter=15,
-            tol=1e-3
+            tol=1e-3,
+            vectorized=True,
+            updating='deferred'
         )
         return np.clip(res.x, lb, ub)
+    
     except Exception:
         return lb + (ub - lb) * 0.5
 
