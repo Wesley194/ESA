@@ -1,108 +1,75 @@
 import os
+import time
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from esa_main_framework import run_esa_optimization
 from esa_benchmark_functions import FUNC_CONFIG
 
-def run_all_experiments():
-    # 1. 實驗參數設定
+def run_comprehensive_experiments():
+    # 1. 實驗矩陣設定
     functions_to_test = ['ellipsoid', 'rosenbrock', 'griewank']
-    dimension = 30
-    max_nfe = 1000
-    num_runs = 20  # 每種函數獨立重複執行 20 次以取得統計顯著性
+    dimensions_to_test = [10, 30, 50]  # 測試不同維度
+    num_runs = 20                      # 每個組合重複 20 次
+    max_nfe = 1000                     # 真實評估上限
     
-    # 建立用來存放實驗結果的資料夾
-    os.makedirs('experiment_results', exist_ok=True)
+    os.makedirs('multi_dim_results', exist_ok=True)
+    all_combination_summary = []
     
-    # 準備一個總表存放所有函數的統計結果
-    summary_data = []
-
-    # 2. 開始對每個 Benchmark 函數跑實驗
+    start_time = time.time()
+    
+    # 2. 開始巢狀迴圈：函數 -> 維度 -> 重複實驗
     for func_name in functions_to_test:
-        print(f"\n==================== 開始測試函數: {func_name} ====================")
-        
-        all_runs_best_fitness = []  # 記錄每次 Run 的最終最優值
-        all_runs_history = []       # 記錄每次 Run 的整條收斂曲線 
-    
-        config = FUNC_CONFIG[func_name]
-        obj_func = config['f']
-        lb_val = config['lb']
-        ub_val = config['ub']
-        for run in range(num_runs):
-            # 使用不同的隨機種子，確保每次 Run 的搜索路徑不同
-            seed = 100 + run 
+        for dim in dimensions_to_test:
+            print(f"\n[測試中] 函數: {func_name.upper()} | 維度: {dim}D")
             
-            # 執行主程式並拿回數據
-            history_best, final_best = run_esa_optimization(
-                obj_func=obj_func, 
-                lb_val=lb_val, 
-                ub_val=ub_val,
-                dim=dimension, 
-                max_nfe=max_nfe, 
-                seed=seed
-            )
+            run_results = []
+            config = FUNC_CONFIG[func_name]
+            obj_func = config['f']
+            lb_val = config['lb']
+            ub_val = config['ub']
+            for run in range(num_runs):
+                seed = 10 + run  # 固定隨機種子確保實驗可重複
+                
+                # 執行主程式
+                _, final_best = run_esa_optimization(
+                    obj_func=obj_func,
+                    lb_val=lb_val,
+                    ub_val=ub_val,
+                    dim=dim,
+                    max_nfe=max_nfe,
+                    seed=seed
+                )
+                run_results.append(final_best)
             
-            all_runs_best_fitness.append(final_best)
-            all_runs_history.append(history_best)
+            # 3. 計算該組合的統計指標
+            run_results = np.array(run_results)
+            mean_val = np.mean(run_results)
+            std_val = np.std(run_results)
+            best_val = np.min(run_results)
+            worst_val = np.max(run_results)
             
-            print(f"Run {run+1:02d}/{num_runs:02d} 完成! 最終最優解: {final_best:.6e}")
+            # 記錄至總表
+            all_combination_summary.append({
+                'Function': func_name,
+                'Dimension': f"{dim}D",
+                'Best': f"{best_val:.4e}",
+                'Worst': f"{worst_val:.4e}",
+                'Mean': f"{mean_val:.4e}",
+                'Std': f"{std_val:.4e}"
+            })
             
-        # 3. 數據處理：計算統計指標
-        all_runs_best_fitness = np.array(all_runs_best_fitness)
-        mean_val = np.mean(all_runs_best_fitness)
-        std_val = np.std(all_runs_best_fitness)
-        best_val = np.min(all_runs_best_fitness)
-        worst_val = np.max(all_runs_best_fitness)
-        
-        summary_data.append({
-            'Function': func_name,
-            'Dim': dimension,
-            'Best': best_val,
-            'Worst': worst_val,
-            'Mean': mean_val,
-            'Std': std_val,
-            'Optimum': FUNC_CONFIG[func_name]['f_opt']
-        })
-        
-        # 4. 數據處理：將該函數的所有收斂曲線對齊，並計算「平均收斂曲線」
-        # 由於演化步長不同可能導致歷史長度有些微差異，這裡將其轉換為標準二維陣列
-        max_len = max(len(h) for h in all_runs_history)
-        padded_history = []
-        for h in all_runs_history:
-            # 如果長度不足 max_nfe，用最後一個最優值補滿
-            if len(h) < max_len:
-                h = h + [h[-1]] * (max_len - len(h))
-            padded_history.append(h[:max_nfe]) # 確保長度不超過上限
-            
-        padded_history = np.array(padded_history)
-        mean_convergence = np.mean(padded_history, axis=0) # 對 20 次 Run 取平均
-        
-        # 保存單一函數的詳細收斂數據到 CSV
-        df_conv = pd.DataFrame(padded_history).T
-        df_conv.columns = [f'Run_{i+1}' for i in range(num_runs)]
-        df_conv['Mean_Convergence'] = mean_convergence
-        df_conv.to_csv(f'experiment_results/{func_name}_convergence.csv', index_label='NFE')
-        
-        # 5. 繪製單一函數的收斂圖
-        plt.figure(figsize=(8, 5))
-        plt.plot(mean_convergence, label=f'ESA Mean (Dim={dimension})', color='blue', linewidth=2)
-        plt.title(f'Convergence Curve on {func_name.capitalize()}')
-        plt.xlabel('Number of Function Evaluations (NFE)')
-        plt.ylabel('Best Fitness Value (Log Scale)')
-        plt.yscale('log') # 演化算法通常使用對數座標軸看收斂細節
-        plt.grid(True, which="both", ls="--")
-        plt.legend()
-        plt.savefig(f'experiment_results/{func_name}_convergence_plot.png', dpi=300)
-        plt.close()
+            print(f"-> 統計結果: Mean = {mean_val:.4e}, Std = {std_val:.4e}")
 
-    # 6. 將所有函數的統計總表匯出成一個最終的 CSV 報告
-    df_summary = pd.DataFrame(summary_data)
-    df_summary.to_csv('experiment_results/final_statistical_summary.csv', index=False)
+    # 4. 匯出最終表格
+    df_final = pd.DataFrame(all_combination_summary)
+    df_final.to_csv('multi_dim_results/final_paper_table.csv', index=False)
     
-    print("\n==================== 所有實驗完成！ ====================")
-    print("產生的數據與圖表已儲存在 'experiment_results/' 資料夾中。")
-    print(df_summary.to_string(index=False))
+    end_time = time.time()
+    total_duration = end_time - start_time
+    print(f"\n==================== 實驗全部結束 ====================")
+    print(f"總共耗時: {total_duration/60:.2f} 分鐘")
+    print("已生成最終數據報表：'multi_dim_results/final_paper_table.csv'")
+    print(df_final.to_string(index=False))
 
 if __name__ == "__main__":
-    run_all_experiments()
+    run_comprehensive_experiments()
