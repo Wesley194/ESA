@@ -9,7 +9,7 @@ def generate_table_ii():
     functions = ['ellipsoid', 'rosenbrock', 'griewank']
     dimensions = [30]
     modes = ['ES-a1', 'ES-a2', 'ES-a3', 'ES-a4', 'ESA']
-    num_runs = 20
+    num_runs = 5
     max_nfe = 1000
     
     os.makedirs('paper_tables', exist_ok=True)
