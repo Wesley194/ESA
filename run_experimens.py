@@ -8,8 +8,8 @@ from esa_benchmark_functions import FUNC_CONFIG
 def run_comprehensive_experiments():
     # 1. 實驗矩陣設定
     functions_to_test = ['ellipsoid', 'rosenbrock', 'griewank']
-    dimensions_to_test = [10, 30, 50]  # 測試不同維度
-    num_runs = 20                      # 每個組合重複 20 次
+    dimensions_to_test = [30]  # 測試不同維度
+    num_runs = 5                      # 每個組合重複 n 次
     max_nfe = 1000                     # 真實評估上限
     
     os.makedirs('multi_dim_results', exist_ok=True)
