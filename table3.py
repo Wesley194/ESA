@@ -8,7 +8,7 @@ def generate_table_iii():
     functions = ['ellipsoid', 'rosenbrock', 'griewank']
     dimensions = [30]
     modes = ['ESA-no-a1', 'ESA-no-a2', 'ESA-no-a3', 'ESA-no-a4', 'ESA']
-    num_runs = 20
+    num_runs = 5
     max_nfe = 1000
     
     os.makedirs('paper_tables', exist_ok=True)
