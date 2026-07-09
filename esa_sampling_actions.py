@@ -35,8 +35,8 @@ def jade(surrogate, lb: np.ndarray, ub: np.ndarray) -> np.ndarray:
         res = differential_evolution(
             vectorized_predict,
             bounds, 
-            popsize=3,
-            maxiter=15,
+            popsize=15,
+            maxiter=30,
             tol=1e-3,
             vectorized=True,
             updating='deferred'
