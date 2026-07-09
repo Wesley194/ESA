@@ -31,7 +31,7 @@ def run_comprehensive_experiments():
                 seed = 10 + run  # 固定隨機種子確保實驗可重複
                 
                 # 執行主程式
-                _, final_best = run_esa_optimization(
+                final_best = run_esa_optimization(
                     obj_func=obj_func,
                     lb_val=lb_val,
                     ub_val=ub_val,
