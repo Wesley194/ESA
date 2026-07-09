@@ -27,6 +27,8 @@ class RBFModel :
         Phi_new = np.exp(-dist_matrix_sq / self.beta)
         Y_hat = np.dot(Phi_new, self.omega)
         return Y_hat.flatten()
+    def predict_single(self, x):
+        return self.predict(x)[0]
 
 #test:
 #X_sample = np.array([[1.0, 2.0], [3.0, 5.0], [2.0, 1.0], [5.0, 4.0], [4.0, 2.0]])

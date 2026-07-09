@@ -20,7 +20,7 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import differential_evolution
 import warnings
 warnings.filterwarnings("ignore")
-#需要import RBFModel
+from RBF import RBFModel
 
 #輔助運算函數，負責代理模型的最佳化
 #參考論文Page 720的Algorithm 3
