@@ -28,13 +28,11 @@ def jade(surrogate, lb: np.ndarray, ub: np.ndarray) -> np.ndarray:
     bounds = list(zip(lb.tolist(), ub.tolist()))
     try:
         res = differential_evolution(
-            surrogate.predict, 
+            surrogate.predict_single, 
             bounds, 
-            popsize=3, 
-            maxiter=15, 
-            tol=1e-3,
-            vectorized=True,
-            updating='deferred'
+            popsize=3,
+            maxiter=15,
+            tol=1e-3
         )
         return np.clip(res.x, lb, ub)
     except Exception:
