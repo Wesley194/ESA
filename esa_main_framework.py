@@ -61,6 +61,16 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
             # 原本的 QAgent 選擇策略不需要連續狀態
             action_idx = agent.select_action()
         
+        if mode == "ES-a1": action_idx = 0
+        elif mode == "ES-a2": action_idx = 1
+        elif mode == "ES-a3": action_idx = 2
+        elif mode == "ES-a4": action_idx = 3
+        
+        elif mode == "ESA-no-a1" and action_idx == 0: action_idx = np.random.choice([1, 2, 3])
+        elif mode == "ESA-no-a2" and action_idx == 1: action_idx = np.random.choice([0, 2, 3])
+        elif mode == "ESA-no-a3" and action_idx == 2: action_idx = np.random.choice([0, 1, 3])
+        elif mode == "ESA-no-a4" and action_idx == 3: action_idx = np.random.choice([0, 1, 2])
+        
         # 執行對應的 Sampling Action
         new_points = []
         if action_idx == 0:
