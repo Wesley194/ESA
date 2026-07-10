@@ -8,6 +8,3 @@ def LHS(sample:int,dimension:int,lowerbound,upperbound):
     col_indices = np.arange(dimension)
     x = x[row_indices_shuffled, col_indices]
     return x
-'''test:
-x=LHS(10,5,0,10)
-print(x)'''
