@@ -22,14 +22,6 @@ import warnings
 warnings.filterwarnings("ignore")
 from RBF import RBFModel
 
-#輔助運算函數，負責代理模型的最佳化
-#參考論文Page 720的Algorithm 3
-def jade(surrogate, lb: np.ndarray, ub: np.ndarray) -> np.ndarray:
-    bounds = list(zip(lb.tolist(), ub.tolist()))
-    try:
-        res = differential_evolution(surrogate.predict_single, bounds, popsize=15, maxiter=200, tol=1e-5)
-        return np.clip(res.x, lb, ub)
-
 #輔助運算函數，負責邊界計算
 #參考論文Page 720的Eq. 7 & Eq. 8
 def local_range(X_local: np.ndarray, lb: np.ndarray, ub: np.ndarray):
@@ -59,6 +51,47 @@ def de(surrogate, population: np.ndarray,lb: np.ndarray, ub: np.ndarray, rng: np
         trials.append(np.where(mask, mutant, population[i]))
     trials = np.array(trials)
     return trials[np.argmin(surrogate.predict(trials))].copy()
+
+# 新增：專門用於 a2 與 a4 的原生 DE 局部搜尋器
+def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, popsize=15, maxiter=30) -> np.ndarray:
+    d = lb.shape[0]
+    
+    # 1. 隨機初始化群體 (在局部邊界內均勻抽樣)
+    population = rng.uniform(lb, ub, (popsize, d))
+    
+    # 2. 預先計算初始適應值 (直接利用你的向量化 predict)
+    fitness = surrogate.predict(population)
+    
+    # 3. 開始多代演化
+    for _ in range(maxiter):
+        trials = np.zeros_like(population)
+        
+        # 產生變異與交叉子代
+        for i in range(popsize):
+            cands = [j for j in range(popsize) if j != i]
+            r1, r2, r3 = rng.choice(cands, 3, replace=False)
+            
+            F_i = rng.uniform(0.4, 1.0)
+            mutant = np.clip(population[r1] + F_i * (population[r2] - population[r3]), lb, ub)
+            
+            CR = rng.uniform(0.1, 1.0)
+            j_rand = rng.integers(d)
+            mask = rng.random(d) < CR
+            mask[j_rand] = True
+            
+            trials[i] = np.where(mask, mutant, population[i])
+            
+        # 4. 向量化評估所有子代的適應值
+        trial_fitness = surrogate.predict(trials)
+        
+        # 5. 選擇 (Selection)：如果子代比較好，就取代原本的個體
+        better_idx = trial_fitness < fitness
+        population[better_idx] = trials[better_idx]
+        fitness[better_idx] = trial_fitness[better_idx]
+        
+    # 6. 回傳這 30 代中找到的歷史最佳解
+    best_idx = np.argmin(fitness)
+    return population[best_idx].copy()
 
 #4個Sampling Actions
 #a1負責負責全域探索。取出資料庫中前n筆較佳資料作為群體，訓練Global RBF，接著使用 DE/rand/1 產生n個向量，透過Global RBF挑選其中預測值最佳的點進行評估。
@@ -92,7 +125,7 @@ def a2_surrogate_local_search(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callab
     rbf_l = RBFModel()
     rbf_l.fit(X_loc, y_loc)
     lb_l, ub_l = local_range(X_loc, lb, ub)
-    x_c = jade(rbf_l, lb_l, ub_l)
+    x_c = custom_de_optimizer(rbf_l, lb_l, ub_l, rng)
     return x_c, real_f(x_c)
 
 #a3負責基因重組。找出前m筆資料，針對這m筆資料中的當前最佳解，逐一在各個維度上抽取這m筆資料的對應特徵進行替換，並用代理模型篩出最佳解。
@@ -152,7 +185,7 @@ def a4_trust_region(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callable,lb: np.
         #記錄x_best尚未更新前的代理模型預測值
         f_pred_xbest_before = rbf_l.predict_single(x_best)
 
-        x_c = jade(rbf_l, tr_lb, tr_ub)
+        x_c = custom_de_optimizer(rbf_l, tr_lb, tr_ub, rng)
         f_c = real_f(x_c)
         new_data.append((x_c.copy(), f_c))
 
