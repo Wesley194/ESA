@@ -7,7 +7,7 @@ from collections import deque
 from scipy.stats import skew
 
 
-def get_current_state(DB_X, DB_y, nfe, max_nfe, recent_history, recent_rbf_error, stagnation_counter, prev_action, last_a1_nfe):
+def get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action):
     """
     dqn 需要的輸入整理，總共有 6 維特徵和 one-hot 過的上一次決策
     """
@@ -15,21 +15,28 @@ def get_current_state(DB_X, DB_y, nfe, max_nfe, recent_history, recent_rbf_error
     s_0 = nfe / max_nfe                        
     # 近期成功率
     s_1 = sum(recent_history) / len(recent_history) if len(recent_history) > 0 else 0.0 
-    # 空間多樣性
-    s_2 = np.mean(np.std(DB_X, axis=0)) if len(DB_X) > 0 else 0.0 
+    # 空間多樣性 for a2 and a4
+    recent_window_s2 = min(len(DB_X), min(25 + dim, 60))
+    if recent_window_s2 > 1:
+        local_X = DB_X[-recent_window_s2:]
+        std_per_dim = np.std(local_X, axis=0)
+        range_per_dim = np.ptp(local_X, axis=0) # np.ptp 即 max - min
+        range_per_dim = np.maximum(range_per_dim, 1e-8) # 防呆：避免除以 0
+        s_2 = np.mean(std_per_dim / range_per_dim)
+    else:
+        s_2 = 0.0
     
-    # 4. Local Skewness
+    # Local Skewness
     s_3 = 0.0  
-    points_since_last_a1 = len(DB_X) - last_a1_nfe
-    local_window = min(points_since_last_a1, 50)
+    local_window = 50
     
-    if len(DB_X) > 100 and local_window >= 4:
+    if len(DB_X) > 100:
         local_y = DB_y[-local_window:]
         raw_skew = skew(local_y)
         if not np.isnan(raw_skew): 
             s_3 = float(np.tanh(raw_skew)) # 用 tanh 壓縮到安全範圍
 
-    # RBF 模型誤差
+    # RBF 模型誤差 (MAPE)
     s_4 = recent_rbf_error                     
     
     # 停滯指數 (超過 20 步沒進步就逼近 1.0)
@@ -44,6 +51,7 @@ def get_current_state(DB_X, DB_y, nfe, max_nfe, recent_history, recent_rbf_error
         action_one_hot[prev_action] = 1.0
         
     return np.concatenate([base_state, action_one_hot])
+    return np.concatenate([base_state])
 
 class ReplayBuffer:
     """ 經驗回放池，用來打破資料的時間關聯性 """

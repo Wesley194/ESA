@@ -33,21 +33,20 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
     DB_X = LHS(sample=initial_samples, dimension=dim, lowerbound=lb[0], upperbound=ub[0])
     DB_y = np.array([obj_func(x) for x in DB_X])
     nfe = len(DB_X)
-    
+    improved = False
     prev_best = np.min(DB_y)
     
     # DQN 的 input
-    recent_history = deque(maxlen=50)
+    recent_history = deque(maxlen=10)
     recent_history.append(0) 
     recent_rbf_error = 0.0 
     stagnation_counter = 0 
     prev_action = -1       # 記錄上一招
-    last_a1_nfe = 100
 
     # 取得初始 State for DQN 
     state = None
     if agent_type == "DQN":
-        state = get_current_state(DB_X, DB_y, nfe, max_nfe, recent_history, recent_rbf_error, stagnation_counter, prev_action, last_a1_nfe)
+        state = get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action)
     
     loop_counter = 0
 
@@ -58,7 +57,6 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
         if agent_type == "DQN":
             action_idx = agent.select_action(state)
         else:
-            # 原本的 QAgent 選擇策略不需要連續狀態
             action_idx = agent.select_action()
         
         if mode == "ES-a1": action_idx = 0
@@ -100,32 +98,57 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
         done = (nfe >= max_nfe)
 
         if agent_type == "DQN":
-            if action_idx == 0 and improved:
-                last_a1_nfe = nfe
                 
-            # 2. 計算代理模型的近期相對誤差 (sMAPE)
+            # 2. 計算代理模型的近期誤差 Local Range Normalized Error
             if len(DB_X) > 15:
                 rbf_eval = RBFModel()
                 rbf_eval.fit(DB_X[-51:-1], DB_y[-51:-1])
                 
                 f_pred = rbf_eval.predict_single(DB_X[-1])
                 f_true = DB_y[-1]
-                error = abs(f_pred - f_true) / (abs(f_pred) + abs(f_true) + 1e-8)
+                local_window_size = min(len(DB_y) - 1, 50)
+                local_y = DB_y[-local_window_size-1 : -1] # 取最近的 50 個歷史適應值
+
+                # 計算區域內的函數值落差 (Max - Min)
+                local_range = np.max(local_y) - np.min(local_y)
+
+                # 預測值與真實值的絕對誤差
+                absolute_error = abs(f_pred - f_true)
+
+                # 如果區域落差極小(代表函數非常平坦)，加上 1e-8 避免除以 0
+                # 計算相對誤差，並強制截斷在 1.0，保護 DQN 不受極端離群值傷害
+                if local_range < 1e-8:
+                    error = min(absolute_error / 1e-8, 1.0)
+                else:
+                    error = min(absolute_error / local_range, 1.0)
+
                 recent_rbf_error = float(error)
 
-            if improved:
-                reward = 1.0               # 只要有進步就是 1 分 (不論多微小)
-                stagnation_counter = 0     # 停滯歸零
-                recent_history.append(1)
-            else:
-                reward = 0.0               # 沒進步就是 0 分 (不倒扣)
-                stagnation_counter += 1    # 累積停滯步數 (給 DQN 觀察用)
-                recent_history.append(0)
-                
+            
+            if agent_type == "DQN":    
+                if improved:
+                    reward = 1.0               
+                    stagnation_counter = 0     
+                else:
+                    stagnation_counter += 1
+                    # 新增：如果卡住太久，且願意使用全域探索(a1)或大範圍重組(a3)，給予安慰獎！
+                    if stagnation_counter > 10 and action_idx in [0, 2]:
+                        reward = 0.1  # 鼓勵探索的獎勵
+                    else:
+                        reward = 0.0
+                        
+            elif agent_type == "QL":
+                if improved:
+                    reward = 1.0               # 只要有進步就是 1 分 (不論多微小)
+                    stagnation_counter = 0     # 停滯歸零
+                else:
+                    reward = 0.0               # 沒進步就是 0 分 (不倒扣)
+                    stagnation_counter += 1    # 累積停滯步數 (給 DQN 觀察用)
+
             done = (nfe >= max_nfe)
             
             # 取得 Next State (傳入剛出完的 action_idx 當作下一步的 prev_action)
-            next_state = get_current_state(DB_X, DB_y, nfe, max_nfe, recent_history, recent_rbf_error, stagnation_counter, action_idx, last_a1_nfe)
+            next_state = get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, action_idx)
             
             # 訓練 DQN
             agent.memory.push(state, action_idx, reward, next_state, done)
@@ -138,7 +161,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
             if agent.epsilon > agent.epsilon_min:
                 agent.epsilon *= agent.epsilon_decay
             
-            print(f"NFE: {nfe:4d} | Best: {curr_best:.4e} | Skew: {state[3]:.2f} | Err: {recent_rbf_error:.2f} | Stag: {stagnation_counter:2d} | Action: a{action_idx+1}")
+            print(f"NFE: {nfe:4d} | Best: {curr_best:.4e} | 多樣性: {state[2]:.2f} | Skew: {state[3]:.2f} | Err: {state[4]:.2f} | Stag: {stagnation_counter:2d} | Action: a{action_idx+1}")
         
 
         # Q-learning
@@ -168,7 +191,7 @@ if __name__ == "__main__":
     
     # 執行主程式測試
     best_val = run_esa_optimization(
-        agent_type="QL", 
+        agent_type="DQN", 
         obj_func=obj_func, 
         lb_val=lb_val, 
         ub_val=ub_val,
