@@ -53,7 +53,7 @@ def de(surrogate, population: np.ndarray,lb: np.ndarray, ub: np.ndarray, rng: np
     return trials[np.argmin(surrogate.predict(trials))].copy()
 
 # 新增：專門用於 a2 與 a4 的原生 DE 局部搜尋器
-def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, popsize=15, maxiter=30) -> np.ndarray:
+def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, popsize=15, maxiter=200) -> np.ndarray:
     d = lb.shape[0]
     
     # 1. 隨機初始化群體 (在局部邊界內均勻抽樣)

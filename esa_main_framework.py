@@ -14,14 +14,22 @@ from esa_benchmark_functions import FUNC_CONFIG
 
 
 # ESA主迴圈
-def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.0, dim=30, max_nfe=1000, seed=42):
+def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.0, dim=30, max_nfe=1000, seed=42, mode=None, ablation_mode='none'):
     
     lb = np.full(dim, lb_val)  
     ub = np.full(dim, ub_val)
     rng = np.random.default_rng(seed)
 
+    # 動態決定 State 維度
+    if ablation_mode == 'none':
+        state_dim = 10
+    elif ablation_mode == 'prev_action':
+        state_dim = 6
+    else:
+        state_dim = 9 # 少了其中一個連續特徵
+
     if agent_type == "DQN":
-        agent = DQNAgent(state_dim=10, action_dim=4)
+        agent = DQNAgent(state_dim=state_dim, action_dim=4)
     elif agent_type == "QL":
         agent = QAgent()
     else:
@@ -46,7 +54,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
     # 取得初始 State for DQN 
     state = None
     if agent_type == "DQN":
-        state = get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action)
+        state = get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action, ablation_mode)
     
     loop_counter = 0
 
@@ -131,24 +139,22 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
                     stagnation_counter = 0     
                 else:
                     stagnation_counter += 1
-                    # 新增：如果卡住太久，且願意使用全域探索(a1)或大範圍重組(a3)，給予安慰獎！
-                    if stagnation_counter > 10 and action_idx in [0, 2]:
+                    # 如果卡住太久，且願意使用全域探索(a1)或大範圍重組(a3)，給予安慰獎！
+                    if (4 <= stagnation_counter < 8) and action_idx in [0, 2]:
                         reward = 0.1  # 鼓勵探索的獎勵
                     else:
-                        reward = 0.0
+                        reward = 0
                         
             elif agent_type == "QL":
                 if improved:
                     reward = 1.0               # 只要有進步就是 1 分 (不論多微小)
-                    stagnation_counter = 0     # 停滯歸零
                 else:
-                    reward = 0.0               # 沒進步就是 0 分 (不倒扣)
-                    stagnation_counter += 1    # 累積停滯步數 (給 DQN 觀察用)
+                    reward = 0.0               # 沒進步就是 0 分 (不倒扣)              
 
             done = (nfe >= max_nfe)
             
             # 取得 Next State (傳入剛出完的 action_idx 當作下一步的 prev_action)
-            next_state = get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, action_idx)
+            next_state = get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, action_idx, ablation_mode)
             
             # 訓練 DQN
             agent.memory.push(state, action_idx, reward, next_state, done)

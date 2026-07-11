@@ -7,7 +7,7 @@ from collections import deque
 from scipy.stats import skew
 
 
-def get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action):
+def get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action, ablation_mode='none'):
     """
     dqn 需要的輸入整理，總共有 6 維特徵和 one-hot 過的上一次決策
     """
@@ -39,19 +39,37 @@ def get_current_state(DB_X, DB_y, lb_val, ub_val, nfe, max_nfe, dim, recent_hist
     # RBF 模型誤差 (MAPE)
     s_4 = recent_rbf_error                     
     
-    # 停滯指數 (超過 20 步沒進步就逼近 1.0)
+    # 停滯指數 
     s_5 = min(stagnation_counter / 20.0, 1.0)
     
-    # 組合 6 維基礎特徵
-    base_state = np.array([s_0, s_1, s_2, s_3, s_4, s_5], dtype=np.float32)
+    # 將基礎特徵放入字典，方便進行消融
+    features_dict = {
+        's_0': s_0,
+        's_1': s_1,
+        's_2': s_2,
+        's_3': s_3,
+        's_4': s_4,
+        's_5': s_5
+    }
+    
+    # 根據 ablation_mode 決定要保留的基礎特徵
+    active_features = []
+    for key in ['s_0', 's_1', 's_2', 's_3', 's_4', 's_5']:
+        if ablation_mode != key:
+            active_features.append(features_dict[key])
+            
+    base_state = np.array(active_features, dtype=np.float32)
     
     # 4 維 One-Hot Encoding
     action_one_hot = np.zeros(4, dtype=np.float32)
     if prev_action != -1:
         action_one_hot[prev_action] = 1.0
         
-    return np.concatenate([base_state, action_one_hot])
-    return np.concatenate([base_state])
+    # 根據是否消融 prev_action 來回傳最終狀態
+    if ablation_mode == 'prev_action':
+        return base_state
+    else:
+        return np.concatenate([base_state, action_one_hot])
 
 class ReplayBuffer:
     """ 經驗回放池，用來打破資料的時間關聯性 """
