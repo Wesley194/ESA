@@ -52,17 +52,20 @@ def de(surrogate, population: np.ndarray,lb: np.ndarray, ub: np.ndarray, rng: np
     trials = np.array(trials)
     return trials[np.argmin(surrogate.predict(trials))].copy()
 
-# 新增：專門用於 a2 與 a4 的原生 DE 局部搜尋器
-def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, popsize=15, maxiter=200) -> np.ndarray:
+# 專門用於 a2 與 a4 的原生 DE 局部搜尋器
+def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, center_pt=None, popsize=50, maxiter=100, early_stopping=15) -> np.ndarray:
     d = lb.shape[0]
     
-    # 1. 隨機初始化群體 (在局部邊界內均勻抽樣)
+    # 隨機初始化群體
     population = rng.uniform(lb, ub, (popsize, d))
-    
-    # 2. 預先計算初始適應值 (直接利用你的向量化 predict)
+    if center_pt is not None:
+        population[0] = np.clip(center_pt, lb, ub)
     fitness = surrogate.predict(population)
+
+    best_f_history = np.min(fitness)
+    no_improve_cnt = 0
     
-    # 3. 開始多代演化
+    # 開始多代演化
     for _ in range(maxiter):
         trials = np.zeros_like(population)
         
@@ -81,15 +84,24 @@ def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.rando
             
             trials[i] = np.where(mask, mutant, population[i])
             
-        # 4. 向量化評估所有子代的適應值
         trial_fitness = surrogate.predict(trials)
         
-        # 5. 選擇 (Selection)：如果子代比較好，就取代原本的個體
+        # 做Selection：如果子代比較好，就取代原本的個體
         better_idx = trial_fitness < fitness
         population[better_idx] = trials[better_idx]
         fitness[better_idx] = trial_fitness[better_idx]
+
+        current_best_f = np.min(fitness)
+        if best_f_history - current_best_f > 1e-12:
+            best_f_history = current_best_f
+            no_improve_cnt = 0  # 有進步，計數器歸零
+        else:
+            no_improve_cnt += 1 # 沒進步，計數器 +1
+            
+        if no_improve_cnt >= early_stopping:
+            break
         
-    # 6. 回傳這 30 代中找到的歷史最佳解
+    # 回傳歷史最佳解
     best_idx = np.argmin(fitness)
     return population[best_idx].copy()
 
@@ -125,7 +137,7 @@ def a2_surrogate_local_search(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callab
     rbf_l = RBFModel()
     rbf_l.fit(X_loc, y_loc)
     lb_l, ub_l = local_range(X_loc, lb, ub)
-    x_c = custom_de_optimizer(rbf_l, lb_l, ub_l, rng)
+    x_c = custom_de_optimizer(rbf_l, lb_l, ub_l, rng, center_pt=X_loc[0], popsize=l)
     return x_c, real_f(x_c)
 
 #a3負責基因重組。找出前m筆資料，針對這m筆資料中的當前最佳解，逐一在各個維度上抽取這m筆資料的對應特徵進行替換，並用代理模型篩出最佳解。
@@ -162,9 +174,17 @@ def a4_trust_region(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callable,lb: np.
     f_best = y_m[0]
     lb_l, ub_l = local_range(DB_m, lb, ub)
 
-    #初始Trust Region半徑為m筆資料中適應值落差最大者之間距的一半
-    min_pt = DB_m[np.argmin(y_m)]
-    max_pt = DB_m[np.argmax(y_m)]
+    # 初始Trust Region半徑為距離 x_best 最近的 5 * d 個point 
+    num_closest = min(len(DB_X), 5 * d)
+    distances = np.linalg.norm(DB_X - x_best, axis=1)
+    closest_idx = np.argsort(distances)[:num_closest]
+    
+    X_initial_tr = DB_X[closest_idx]
+    y_initial_tr = DB_y[closest_idx]
+    
+    # 初始delta為 5*d 筆資料中適應值落差最大者之間距的一半
+    min_pt = X_initial_tr[np.argmin(y_initial_tr)]
+    max_pt = X_initial_tr[np.argmax(y_initial_tr)]
     delta = max(0.5 * np.linalg.norm(max_pt - min_pt), 1e-8)
 
     new_data = []
@@ -185,7 +205,7 @@ def a4_trust_region(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callable,lb: np.
         #記錄x_best尚未更新前的代理模型預測值
         f_pred_xbest_before = rbf_l.predict_single(x_best)
 
-        x_c = custom_de_optimizer(rbf_l, tr_lb, tr_ub, rng)
+        x_c = custom_de_optimizer(rbf_l, tr_lb, tr_ub, rng, center_pt=x_best)
         f_c = real_f(x_c)
         new_data.append((x_c.copy(), f_c))
 
@@ -200,7 +220,7 @@ def a4_trust_region(DB_X: np.ndarray, DB_y: np.ndarray, real_f: callable,lb: np.
         #Trust ratio λ: 若預測進步量太小則縮小trust region
         actual_impr = f_before - f_c
         surrogate_impr = f_pred_xbest_before - f_pred_xc
-        lambda_k = actual_impr / surrogate_impr if abs(surrogate_impr) > 1e-30 else 0.5
+        lambda_k = actual_impr / surrogate_impr if surrogate_impr > 1e-30 else 0.0
 
         if lambda_k <= 0.25:
             delta = 0.25 * delta
