@@ -7,14 +7,11 @@ from collections import deque
 from scipy.stats import skew
 
 
-def get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action, ablation_mode='none'):
+def get_current_state(DB_X, DB_y, dim, improved, recent_rbf_error, prev_action, ablation_mode='none'):
     """
     dqn 需要的輸入整理，總共有 6 維特徵和 one-hot 過的上一次決策
     """
-    # 預算消耗比例
-    s_0 = nfe / max_nfe                        
-    # 近期成功率
-    s_1 = sum(recent_history) / len(recent_history) if len(recent_history) > 0 else 0.0 
+    s_1 = 1.0 if improved else 0.0                        
     # 空間多樣性 for a2 and a4
     recent_window_s2 = min(len(DB_X), min(25 + dim, 60))
     if recent_window_s2 > 1:
@@ -39,22 +36,18 @@ def get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_
     # RBF 模型誤差 (MAPE)
     s_4 = recent_rbf_error                     
     
-    # 停滯指數 
-    s_5 = min(stagnation_counter / 20.0, 1.0)
     
     # 將基礎特徵放入字典，方便進行消融
     features_dict = {
-        's_0': s_0,
-        's_1': s_1,
+        's_1': s_1,   
         's_2': s_2,
         's_3': s_3,
         's_4': s_4,
-        's_5': s_5
     }
     
     # 根據 ablation_mode 決定要保留的基礎特徵
     active_features = []
-    for key in ['s_0', 's_1', 's_2', 's_3', 's_4', 's_5']:
+    for key in ['s_1', 's_2', 's_3', 's_4']:
         if ablation_mode != key:
             active_features.append(features_dict[key])
             

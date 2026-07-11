@@ -53,7 +53,7 @@ def de(surrogate, population: np.ndarray,lb: np.ndarray, ub: np.ndarray, rng: np
     return trials[np.argmin(surrogate.predict(trials))].copy()
 
 # 專門用於 a2 與 a4 的原生 DE 局部搜尋器
-def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, center_pt=None, popsize=50, maxiter=100, early_stopping=15) -> np.ndarray:
+def custom_de_optimizer(surrogate, lb: np.ndarray, ub: np.ndarray, rng: np.random.Generator, center_pt=None, popsize=30, maxiter=50, early_stopping=15) -> np.ndarray:
     d = lb.shape[0]
     
     # 隨機初始化群體
