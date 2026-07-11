@@ -14,7 +14,7 @@ from esa_benchmark_functions import FUNC_CONFIG
 
 
 # ESA主迴圈
-def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.0, dim=30, max_nfe=1000, seed=42, mode = "ESA"):
+def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.0, dim=30, max_nfe=1000, seed=42, mode="ESA"):
     
     lb = np.full(dim, lb_val)  
     ub = np.full(dim, ub_val)
