@@ -6,7 +6,7 @@ from esa_benchmark_functions import FUNC_CONFIG
 
 def generate_table_iii():
     functions = ['ellipsoid', 'rosenbrock', 'griewank']
-    dimensions = [30]
+    dimensions = [30, 50, 100]
     modes = ['ESA-no-a1', 'ESA-no-a2', 'ESA-no-a3', 'ESA-no-a4', 'ESA']
     num_runs = 5
     max_nfe = 1000
