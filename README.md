@@ -19,7 +19,7 @@
 
 ### 1. 論文重現
 在此階段，我們完整重現了原論文的架構：
-- **代理模型**：引入 Radial Basis Function (RBF) 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
+- **代理模型**：使用 Radial Basis Function (RBF) 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
 - **採樣策略**：實作了針對 Expensive Problems 的 4 種演化採樣策略。
 - **決策機制**：使用 Q-Learning (Q-Table) 作為 Agent 的大腦，根據當前地形特徵選擇最適合的採樣策略。
 
