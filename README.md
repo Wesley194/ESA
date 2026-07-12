@@ -50,7 +50,6 @@
 ### Q-Learning
 | 論文數據 | 實驗結果 |
 | :-----: | :--------: |
-| Table5 <img width="293" height="242" alt="image" src="https://github.com/user-attachments/assets/fb3c5fad-45bb-481b-9a70-cce1f887a6c4" /> | Table5 <img width="480" height="266" alt="image" src="https://github.com/user-attachments/assets/053f02be-720a-4229-9a14-fe4e1e0d44f2" /> |
 | Table2 <img width="870" height="243" alt="image" src="https://github.com/user-attachments/assets/4728bfc1-9c60-4759-beb6-1a800826a88b" /> | Table2 |
 | Table3 <img width="871" height="241" alt="image" src="https://github.com/user-attachments/assets/2941e93f-d130-4c4a-bf33-906d43cd6869" /> | Table3 |
 
