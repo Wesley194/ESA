@@ -26,7 +26,8 @@
 ### Q-Learning
 | 論文數據 | 實驗數據 |
 | ----- | -------- |
-| <img width="666" height="242" alt="image" src="https://github.com/user-attachments/assets/17b0d6fe-287b-4cac-ac3c-1ae87fe69d63" /> | <img width="480" height="266" alt="image" src="https://github.com/user-attachments/assets/053f02be-720a-4229-9a14-fe4e1e0d44f2" /> |
+| 。<img width="666" height="242" alt="image" src="https://github.com/user-attachments/assets/17b0d6fe-287b-4cac-ac3c-1ae87fe69d63" /> | 。<img width="480" height="266" alt="image" src="https://github.com/user-attachments/assets/053f02be-720a-4229-9a14-fe4e1e0d44f2" /> |
+| ----- | -------- |
 *像我貼的那篇一樣，左邊放論文的 table 235(沒做的記得省略)，右邊放我們跑出來的
 ### DQN
 *特徵放了什麼，node和層數怎麼放，*
