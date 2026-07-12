@@ -65,7 +65,7 @@ ESA用Q-Learning各種收斂圖
 單一採樣策略收斂圖
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
 | :--- | :---: | :---: | :---: |
-| **Ellipsoid** |  |  |  |
+| **Ellipsoid** | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/44f951af-1327-4ea3-a814-9b023ee3c3e5" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/3818c716-f483-4cae-a4bd-b32c6553563f" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/837392c6-f6b6-49f5-abfe-f7212edad1f3" /> |
 | **Rosenbrock** |  |  |  |
 | **Griewank** |  |  |  |
 
