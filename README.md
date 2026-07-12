@@ -78,12 +78,12 @@ ESA各種收斂圖
 ### DQN
 #### DQN 消融模式之數據
 <p align="center">
-  <img src="./results/DQN_ablation.jpg" width="500">
+  <img src="./results/DQN_ablation.jpg" width="700">
 </p>
 
 #### DQN 收斂數據
 <p align="center">
-  <img src="./results/table5_DQN.jpg" width="400">
+  <img src="./results/table5_DQN.jpg" width="350">
 </p>
 
 #### Q-Learning 與 DQN 收斂圖比較
