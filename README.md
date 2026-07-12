@@ -62,14 +62,19 @@ ESA用Q-Learning各種收斂圖
 | **Rosenbrock** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/f90920d6-39dc-47eb-9b2d-9b590bf8fd5f" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/3be13f6d-37c7-4fea-b72a-5c6ec0942aac" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8b9efac3-dfa0-4b44-8a5c-8da986d45adf" /> |
 | **Griewank** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8dbe49a5-7b0c-4b42-93e8-6c478f07f04b" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/26c40b15-f574-47ec-b8e5-3d398164d5d9" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/ef6801d5-ccdd-4800-a26c-a88b256b77d0" /> |
 
+單一採樣策略收斂圖
+| <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
+| :--- | :---: | :---: | :---: |
+| **Ellipsoid** |  |  |  |
+| **Rosenbrock** |  |  |  |
+| **Griewank** |  |  |  |
 
-
-
-
-
-
-
-
+去一採樣策略收斂圖
+| <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
+| :--- | :---: | :---: | :---: |
+| **Ellipsoid** | <img width="960" height="600" alt="table3_ellipsoid_30D" src="https://github.com/user-attachments/assets/53110528-f5af-4e82-b876-4a22c85969f3" /> | <img width="960" height="600" alt="table3_ellipsoid_50D" src="https://github.com/user-attachments/assets/650b9063-589e-4e60-b5ad-71d3bf55ea6d" /> | <img width="960" height="600" alt="table3_ellipsoid_100D" src="https://github.com/user-attachments/assets/68c26022-02ce-4665-8d91-b74becc1a6a2" /> |
+| **Rosenbrock** | <img width="960" height="600" alt="table3_rosenbrock_30D" src="https://github.com/user-attachments/assets/dc2675f8-d64d-42c6-a3c6-6df55a65a6e7" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/a258cb0b-9106-4a4d-a4ea-c5ffb160f487" /> | <img width="960" height="600" alt="table3_rosenbrock_100D" src="https://github.com/user-attachments/assets/a2f25feb-94b7-4a92-91fb-31f0715045be" /> |
+| **Griewank** | <img width="960" height="600" alt="table3_griewank_30D" src="https://github.com/user-attachments/assets/66892043-ad04-4d09-8c84-e4f66d62a4a9" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/65af3125-62ae-4fd3-8dbf-f2a3909ab620" /> |  |
 
 *像我貼的那篇一樣，左邊放論文的 table 235(沒做的記得省略)，右邊放我們跑出來的
 ### DQN
