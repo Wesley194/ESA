@@ -16,21 +16,23 @@
 
 ### 1. 論文重現
 在此階段，我們完整重現了原論文的架構：
-- **環境與策略**：實作了針對 Expensive Problems 的 4 種演化採樣策略。
+- **代理模型**：引入 **Radial Basis Function (RBF)** 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
+- **採樣策略**：實作了針對 Expensive Problems 的 4 種演化採樣策略。
 - **決策機制**：使用 Q-Learning (Q-Table) 作為 Agent 的大腦，根據當前地形特徵選擇最適合的採樣策略。
-- **加速**: @@@這邊記得要改，怎麼加速怎麼來@@@
-### 2. 進階延伸 (Deep Q-Network)
-論文中使用的 Q-Learning 僅有有限的 8 個狀態，但 Expensive Problems 中的複雜程度往往不僅於此，因此我們導入更加進階的模型DQN，試圖透過更進階的模型加快ESA的收斂速度。
+- **加速**: 
+1. 我們發現策略a2採用的 jade 模型會耗費大量的時間，且論文內容說到搜索能力若充足，其他演算法相差不大。因此最後我們改用普通的 de 演算法。
+### 2. 進階延伸 (Deep Q-Network，DQN)
+論文中使用的 Q-Learning 僅有有限的 8 個狀態，但 Expensive Problems 中的複雜程度往往不僅於此，因此我們導入DQN，試圖透過更進階的模型加快ESA的收斂速度。
 #### 特徵定義
 為了讓 MLP 能精確感知地形的變化進而選出更適合的策略，我們最終選出了 8 個特徵作為輸入：
 
 1. **s_1 是否進步**：數值 0 或 1，表示前一次的採樣策略是否成功找到更佳解
-2. **s_2 空間多樣性**：計算近期數據(設定數量與a2、a4的採樣數相近)在各維度的標準差與全距比例 (std / range)。此特徵用以評估當前搜索空間的多樣性與收斂狀態。
+2. **s_2 空間多樣性**：計算近期數據 (設定數量與a2、a4的採樣數相近) 在各維度的標準差與全距比例 (std / range)。此特徵用以評估當前搜索空間的多樣性與收斂狀態。
 3. **s_3 Local Skewness**：計算近期目標函數值 (Fitness) 的偏度。使用 `tanh` 函數將其壓縮至 `[-1, 1]` 的安全範圍。此特徵用於反映局部地形的對稱性與崎嶇程度，同時避免極端值導致梯度爆炸。
 4. **s_4 預測誤差**：代理模型 (RBF) 的預測誤差 (MAPE)，讓 Agent 知道當前地形是否已被模型充分掌握。
-5. **Action History (4D One-Hot)**：將前次使用的策略進行 One-Hot 編碼，提供 Agent 決策上參考。
+5. **前次決策 (4D One-Hot)**：將前次使用的策略進行 One-Hot 編碼，提供 Agent 決策上參考。
 
-*(註：我們亦實作了消融機制(Ablation Mode)，用於分析各項地形特徵對決策成效的貢獻度。)*
+*(註：我們亦實作了消融機制 Ablation Mode，用於分析各項地形特徵對決策成效的貢獻度。)*
 
 #### 神經網路架構
 底層採用 PyTorch 實作，網路架構如下：
@@ -42,7 +44,7 @@
 - **RL 穩定機制**：
   - **Replay Buffer**：實作容量為 5000 的經驗回放池，透過隨機抽樣打破訓練資料的時間關聯性。
   - **Target Network**：採用雙網路架構，計算 Bellman Equation 目標值時切斷梯度，並定期同步權重，大幅降低訓練過程中的 Q 值震盪。
-  - **Epsilon-Greedy 探索**：探索率 (Epsilon) 從 1.0 起始，以 0.995 的衰減率逐步收斂至最低 0.05，確保 Agent 在Exploration 與Exploitation 之間取得良好平衡。
+  - **Epsilon-Greedy 探索**：Epsilon 從 1.0 起始，以 0.995 的衰減率逐步收斂至最低 0.05，確保 Agent 在 Exploration 與 Exploitation 之間取得良好平衡。
 
 ---
 
@@ -74,6 +76,9 @@ ESA用Q-Learning各種收斂圖
 消融模式和table5
 ### Q-Learning 與 DQN 成效對照
 這個數據我在跑，可以在看要不用放兩者的table5
+| Ellipsoid | Rosenbrock | griewank |
+| :---: | :---: | :---: |
+| ![圖片1](./convergence_plots/conv_ellipsoid_dim30.png) | ![圖片2](./convergence_plots/conv_rosenbrock_dim30.png) | ![圖片3](./convergence_plots/conv_griewank_dim30.png) |
 ---
 
 ## 總結與未來展望 (Conclusion)
