@@ -24,6 +24,7 @@
 
 ## 實驗數據
 ### Q-Learning
+| 論文數據 | 實驗數據 |
 | ----- | -------- |
 | <img width="666" height="242" alt="image" src="https://github.com/user-attachments/assets/17b0d6fe-287b-4cac-ac3c-1ae87fe69d63" /> | <img width="480" height="266" alt="image" src="https://github.com/user-attachments/assets/053f02be-720a-4229-9a14-fe4e1e0d44f2" />
  |
