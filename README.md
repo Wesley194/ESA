@@ -62,14 +62,14 @@ ESA用Q-Learning各種收斂圖
 | **Rosenbrock** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/f90920d6-39dc-47eb-9b2d-9b590bf8fd5f" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/3be13f6d-37c7-4fea-b72a-5c6ec0942aac" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8b9efac3-dfa0-4b44-8a5c-8da986d45adf" /> |
 | **Griewank** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8dbe49a5-7b0c-4b42-93e8-6c478f07f04b" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/26c40b15-f574-47ec-b8e5-3d398164d5d9" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/ef6801d5-ccdd-4800-a26c-a88b256b77d0" /> |
 
+單一採樣策略收斂圖
+| <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
+| :--- | :---: | :---: | :---: |
+| **Ellipsoid** |  |  |  |
+| **Rosenbrock** |  |  |  |
+| **Griewank** |  |  |  |
 
-
-
-
-
-
-
-
+去一採樣策略收斂圖
 
 *像我貼的那篇一樣，左邊放論文的 table 235(沒做的記得省略)，右邊放我們跑出來的
 ### DQN
