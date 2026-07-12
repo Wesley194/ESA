@@ -19,8 +19,8 @@
 - **代理模型**：引入 **Radial Basis Function (RBF)** 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
 - **採樣策略**：實作了針對 Expensive Problems 的 4 種演化採樣策略。
 - **決策機制**：使用 Q-Learning (Q-Table) 作為 Agent 的大腦，根據當前地形特徵選擇最適合的採樣策略。
-- **加速**: 
-1. 我們發現策略a2採用的 jade 模型會耗費大量的時間，且論文內容說到搜索能力若充足，其他演算法相差不大。因此最後我們改用普通的 de 演算法。
+- **加速**: @@@@@
+    1. 我們發現策略a2採用的 jade 模型會耗費大量的時間，且論文內容說到搜索能力若充足，其他演算法相差不大。因此最後我們改用普通的 de 演算法。
 ### 2. 進階延伸 (Deep Q-Network，DQN)
 論文中使用的 Q-Learning 僅有有限的 8 個狀態，但 Expensive Problems 中的複雜程度往往不僅於此，因此我們導入DQN，試圖透過更進階的模型加快ESA的收斂速度。
 #### 特徵定義
@@ -81,7 +81,7 @@ ESA各種收斂圖
 消融模式
 #### DQN 跑 table 5 的數據
 <p align="center">
-  <img src="./results/table5_DQN.jpg" width="600">
+  <img src="./results/table5_DQN.jpg" width="500">
 </p>
 ### Q-Learning 與 DQN 成效對照
 
@@ -96,7 +96,15 @@ ESA各種收斂圖
 ## 總結與未來展望 (Conclusion)
 
 - **總結**：
+本專案重現了 ESA 演算法，更針對其效能與狀態表示的侷限性進行了改良。
+  1. **工程最佳化與加速**：@@@@
+  2. **突破狀態空間限制**：成功導入 DQN 取代傳統的 Q-Table，解決了原先演算法只能處理離散且低維度狀態的痛點。我們精心設計了 8 維連續地形特徵，提供 Agent 更細緻的地形感知能力。
+  3. **嚴謹的成效驗證**：透過完整的單一策略分析、消融實驗以及 Q-Learning 與 DQN 的數據對照，我們證實了深度強化學習在面對複雜、未知且昂貴的目標函數時，能有效提升 Agent 策略選擇的泛化能力與最終收斂表現。
 - **未來展望**：
+基於目前的實作成果，我們認為本專案仍有一些可進一步探討的發展方向：
+  1. **持續改良強化學習架構**：目前的決策大腦基於 Value-based 的 DQN 演算法。未來可繼續改良輸入特徵、引入其他架構(如 PPO)，或近一步改良成 multi-agent。期望能在連續且更複雜的地形特徵輸入下，進一步提升訓練的穩定性與收斂速度。
+  2. **拓展至工程實務應用**：除了標準的測試函數，希望能將此框架應用於真實世界的高昂最佳化問題。
+    這個我們用到一半，時間不夠啦...
 
 ## References
 *   **[Baseline]** Zhen, H., Gong, W., & Wang, L. (2023). Evolutionary sampling agent for expensive problems. *IEEE Transactions on Evolutionary Computation*, 27(3), 716-727.
