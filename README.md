@@ -6,6 +6,8 @@
 
 - **NumPy**
 - **scipy**
+- **pandas**
+- **torch**
 
 ---
 
