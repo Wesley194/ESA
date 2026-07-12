@@ -10,6 +10,9 @@
 - **torch**
 - **matplotlib**
 
+## 執行方式
+透過執行 esa_main_framework.py 的 run_esa_optimization，其餘設定可透過輸入參數調整。
+
 ---
 
 ## 核心實作與延伸
@@ -87,6 +90,7 @@ ESA各種收斂圖
 </p>
 
 #### Q-Learning 與 DQN 收斂圖比較
+藍色為 Q-Learning，橘色為 DQN
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img src="./convergence_plots/conv_ellipsoid_dim30.png" width="100%" alt="Ellipsoid 30D" /> | <img src="./convergence_plots/conv_ellipsoid_dim50.png" width="100%" alt="Ellipsoid 50D" /> | <img src="./convergence_plots/conv_ellipsoid_dim100.png" width="100%" alt="Ellipsoid 100D" /> |
