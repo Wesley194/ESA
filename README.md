@@ -5,7 +5,7 @@
 ## Requirements
 
 - **NumPy**
-- **aaa**
+- **scipy**
 
 ---
 
