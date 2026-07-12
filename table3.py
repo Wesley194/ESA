@@ -40,7 +40,7 @@ def generate_table_iii():
                 histories = []
                 results = []
                 for run in range(num_runs):
-                    best, hist = run_esa_optimization(
+                    best, _, hist = run_esa_optimization(
                         agent_type="QL", obj_func=cfg['f'], lb_val=cfg['lb'],
                         ub_val=cfg['ub'], dim=dim, max_nfe=max_nfe,
                         seed=2026 + run, mode=mode

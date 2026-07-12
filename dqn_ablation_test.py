@@ -19,7 +19,7 @@ if __name__ == "__main__":
         'prev_action' # 拔除 One-hot 
     ]
     
-    test_seeds = [42, 43, 44, 45, 46]
+    test_seeds = [42, 43, 44]
     
     # 儲存結果
     results = []
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                 
                 run_results = []
                 for seed in test_seeds:
-                    best_val = run_esa_optimization(
+                    best_val , _ , _ = run_esa_optimization(
                         agent_type="DQN", 
                         obj_func=obj_func, 
                         lb_val=lb_val, 
@@ -87,4 +87,4 @@ if __name__ == "__main__":
     pd.options.display.float_format = '{:.4e}'.format
     print(pivot_df)
     
-    df_results.to_csv('dqn_ablation_results_dim30_50_100.csv', index=False)
+    df_results.to_csv('dqn_ablation_results_dim30_50_100_final.csv', index=False)

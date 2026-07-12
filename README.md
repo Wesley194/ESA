@@ -16,15 +16,14 @@
 
 ### 1. 論文重現
 在此階段，我們完整重現了原論文的架構：
-- **代理模型**：引入 **Radial Basis Function (RBF)** 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
+- **代理模型**：引入 Radial Basis Function (RBF) 作為代理模型，透過先前數據建構代理模型來逼近真實的適應值評估 Fitness Evaluation。
 - **採樣策略**：實作了針對 Expensive Problems 的 4 種演化採樣策略。
 - **決策機制**：使用 Q-Learning (Q-Table) 作為 Agent 的大腦，根據當前地形特徵選擇最適合的採樣策略。
-- **加速**: @@@@@
-    1. 我們發現策略a2採用的 jade 模型會耗費大量的時間，且論文內容說到搜索能力若充足，其他演算法相差不大。因此最後我們改用普通的 de 演算法。
-### 2. 進階延伸 (Deep Q-Network，DQN)
+
+### 2. 進階延伸 (Deep Q-Network, DQN)
 論文中使用的 Q-Learning 僅有有限的 8 個狀態，但 Expensive Problems 中的複雜程度往往不僅於此，因此我們導入DQN，試圖透過更進階的模型加快ESA的收斂速度。
 #### 特徵定義
-為了讓 MLP 能精確感知地形的變化進而選出更適合的策略，我們最終選出了 8 個特徵作為輸入：
+為了讓 DQN 的神經網路能精確感知地形的變化進而選出更適合的策略，我們最終選出了 8 個特徵作為輸入：
 
 1. **s_1 是否進步**：數值 0 或 1，表示前一次的採樣策略是否成功找到更佳解
 2. **s_2 空間多樣性**：計算近期數據 (設定數量與a2、a4的採樣數相近) 在各維度的標準差與全距比例 (std / range)。此特徵用以評估當前搜索空間的多樣性與收斂狀態。
@@ -77,15 +76,17 @@ ESA各種收斂圖
 | **Griewank** | <img width="960" height="600" alt="table3_griewank_30D" src="https://github.com/user-attachments/assets/66892043-ad04-4d09-8c84-e4f66d62a4a9" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/65af3125-62ae-4fd3-8dbf-f2a3909ab620" /> | <img width="960" height="600" alt="table3_rosenbrock_100D" src="https://github.com/user-attachments/assets/8888771f-9977-410b-a59f-5d9b4ab9d1d3" /> |
 
 ### DQN
-#### DQN 做消融模式
-消融模式
-#### DQN 跑 table 5 的數據
+#### DQN 消融模式之數據
 <p align="center">
-  <img src="./results/table5_DQN.jpg" width="500">
+  <img src="./results/DQN_ablation.jpg" width="500">
 </p>
-### Q-Learning 與 DQN 成效對照
 
-#### 兩者的收斂圖比較
+#### DQN 收斂數據
+<p align="center">
+  <img src="./results/table5_DQN.jpg" width="400">
+</p>
+
+#### Q-Learning 與 DQN 收斂圖比較
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img src="./convergence_plots/conv_ellipsoid_dim30.png" width="100%" alt="Ellipsoid 30D" /> | <img src="./convergence_plots/conv_ellipsoid_dim50.png" width="100%" alt="Ellipsoid 50D" /> | <img src="./convergence_plots/conv_ellipsoid_dim100.png" width="100%" alt="Ellipsoid 100D" /> |
@@ -97,9 +98,8 @@ ESA各種收斂圖
 
 - **總結**：
 本專案重現了 ESA 演算法，更針對其效能與狀態表示的侷限性進行了改良。
-  1. **工程最佳化與加速**：@@@@
-  2. **突破狀態空間限制**：成功導入 DQN 取代傳統的 Q-Table，解決了原先演算法只能處理離散且低維度狀態的痛點。我們精心設計了 8 維連續地形特徵，提供 Agent 更細緻的地形感知能力。
-  3. **嚴謹的成效驗證**：透過完整的單一策略分析、消融實驗以及 Q-Learning 與 DQN 的數據對照，我們證實了深度強化學習在面對複雜、未知且昂貴的目標函數時，能有效提升 Agent 策略選擇的泛化能力與最終收斂表現。
+  1. **突破狀態空間限制**：成功導入 DQN 取代傳統的 Q-Table，解決了原先演算法只能處理離散且低維度狀態的痛點。我們精心設計了 8 維連續地形特徵，提供 Agent 更細緻的地形感知能力。
+  2. **嚴謹的成效驗證**：透過完整的單一策略分析、消融實驗以及 Q-Learning 與 DQN 的數據對照，我們證實了深度強化學習在面對複雜、未知且昂貴的目標函數時，能有效提升 Agent 策略選擇的泛化能力與最終收斂表現。
 - **未來展望**：
 基於目前的實作成果，我們認為本專案仍有一些可進一步探討的發展方向：
   1. **持續改良強化學習架構**：目前的決策大腦基於 Value-based 的 DQN 演算法。未來可繼續改良輸入特徵、引入其他架構(如 PPO)，或近一步改良成 multi-agent。期望能在連續且更複雜的地形特徵輸入下，進一步提升訓練的穩定性與收斂速度。

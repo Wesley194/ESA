@@ -11,6 +11,7 @@ def get_current_state(DB_X, DB_y, dim, improved, recent_rbf_error, prev_action, 
     """
     dqn 需要的輸入整理，總共有 6 維特徵和 one-hot 過的上一次決策
     """
+    # 上一次是否有進步
     s_1 = 1.0 if improved else 0.0                        
     # 空間多樣性 for a2 and a4
     recent_window_s2 = min(len(DB_X), min(25 + dim, 60))

@@ -22,11 +22,11 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
 
     # 動態決定 State 維度
     if ablation_mode == 'none':
-        state_dim = 10
+        state_dim = 8
     elif ablation_mode == 'prev_action':
-        state_dim = 6
+        state_dim = 4
     else:
-        state_dim = 9 # 少了其中一個連續特徵
+        state_dim = 7 
 
     if agent_type == "DQN":
         agent = DQNAgent(state_dim=state_dim, action_dim=4)
@@ -43,18 +43,19 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
     nfe = len(DB_X)
     improved = False
     prev_best = np.min(DB_y)
+
+    history_nfe = [nfe]
+    history_best = [prev_best]
     
     # DQN 的 input
-    recent_history = deque(maxlen=10)
-    recent_history.append(0) 
-    recent_rbf_error = 0.0 
-    stagnation_counter = 0 
+    recent_rbf_error = 0.0
+    stagnation_counter = 0
     prev_action = -1       # 記錄上一招
 
     # 取得初始 State for DQN 
     state = None
     if agent_type == "DQN":
-        state = get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, prev_action, ablation_mode)
+        state = get_current_state(DB_X, DB_y, dim, improved, recent_rbf_error, prev_action, ablation_mode)
     
     loop_counter = 0
 
@@ -105,6 +106,9 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
         improved = (curr_best < prev_best)
         done = (nfe >= max_nfe)
 
+        history_nfe.append(nfe)
+        history_best.append(curr_best)
+
         if agent_type == "DQN":
                 
             # 2. 計算代理模型的近期誤差 Local Range Normalized Error
@@ -140,7 +144,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
                 else:
                     stagnation_counter += 1
                     # 如果卡住太久，且願意使用全域探索(a1)或大範圍重組(a3)，給予安慰獎！
-                    if (4 <= stagnation_counter < 8) and action_idx in [0, 2]:
+                    if (5 <= stagnation_counter < 10) and action_idx in [0, 2]:
                         reward = 0.1  # 鼓勵探索的獎勵
                     else:
                         reward = 0
@@ -154,7 +158,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
             done = (nfe >= max_nfe)
             
             # 取得 Next State (傳入剛出完的 action_idx 當作下一步的 prev_action)
-            next_state = get_current_state(DB_X, DB_y, nfe, max_nfe, dim, recent_history, recent_rbf_error, stagnation_counter, action_idx, ablation_mode)
+            next_state = get_current_state(DB_X, DB_y, dim, improved, recent_rbf_error, action_idx, ablation_mode)
             
             # 訓練 DQN
             agent.memory.push(state, action_idx, reward, next_state, done)
@@ -167,8 +171,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
             if agent.epsilon > agent.epsilon_min:
                 agent.epsilon *= agent.epsilon_decay
             
-            print(f"NFE: {nfe:4d} | Best: {curr_best:.4e} | 多樣性: {state[2]:.2f} | Skew: {state[3]:.2f} | Err: {state[4]:.2f} | Stag: {stagnation_counter:2d} | Action: a{action_idx+1}")
-        
+            # print(f"NFE: {nfe:4d} | Best: {curr_best:.4e} | 多樣性: {state[1]:.2f} | Skew: {state[2]:.2f} | Err: {state[3]:.2f} | Stag: {stagnation_counter:2d} | Action: a{action_idx+1}")
 
         # Q-learning
         elif agent_type == "QL":
@@ -181,7 +184,7 @@ def run_esa_optimization(agent_type="DQN", obj_func=None, lb_val=-5.0, ub_val=5.
         prev_action = action_idx
         loop_counter += 1
         
-    return np.min(DB_y)
+    return np.min(DB_y), history_nfe, history_best
         
 
 if __name__ == "__main__":
@@ -196,14 +199,15 @@ if __name__ == "__main__":
     print(f"測試函數: {target_function} | 邊界: [{lb_val}, {ub_val}]")
     
     # 執行主程式測試
-    best_val = run_esa_optimization(
+    best_val, _, _ = run_esa_optimization(
         agent_type="DQN", 
         obj_func=obj_func, 
         lb_val=lb_val, 
         ub_val=ub_val,
-        dim=30, 
+        dim=4, 
         max_nfe=1000, 
-        seed=42
+        seed=42,
+        ablation_mode="none"
     )
     
     print(f"\n {target_function} 最終最佳解: {best_val:.4e}")
