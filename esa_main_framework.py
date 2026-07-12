@@ -204,7 +204,7 @@ if __name__ == "__main__":
         obj_func=obj_func, 
         lb_val=lb_val, 
         ub_val=ub_val,
-        dim=4, 
+        dim=30, 
         max_nfe=1000, 
         seed=42,
         ablation_mode="none"
