@@ -54,7 +54,7 @@
 | Table3 <img width="871" height="241" alt="image" src="https://github.com/user-attachments/assets/2941e93f-d130-4c4a-bf33-906d43cd6869" /> | Table3 |
 
 table5各種收斂圖
-| <sup>維度</sup> ＼ <sub>函數</sub> | 30D | 50D | 100D |
+| <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/02ed39ac-c124-422a-aeee-52c48aa0139a" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/badd72ad-f703-4643-81e9-988b354cf80d" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8a86ab21-bf2d-4901-9766-a549f6c29e94" /> |
 | **Rosenbrock** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/f90920d6-39dc-47eb-9b2d-9b590bf8fd5f" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/3be13f6d-37c7-4fea-b72a-5c6ec0942aac" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8b9efac3-dfa0-4b44-8a5c-8da986d45adf" /> |
