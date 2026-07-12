@@ -74,7 +74,7 @@ ESA用Q-Learning各種收斂圖
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img width="960" height="600" alt="table3_ellipsoid_30D" src="https://github.com/user-attachments/assets/53110528-f5af-4e82-b876-4a22c85969f3" /> | <img width="960" height="600" alt="table3_ellipsoid_50D" src="https://github.com/user-attachments/assets/650b9063-589e-4e60-b5ad-71d3bf55ea6d" /> | <img width="960" height="600" alt="table3_ellipsoid_100D" src="https://github.com/user-attachments/assets/68c26022-02ce-4665-8d91-b74becc1a6a2" /> |
 | **Rosenbrock** | <img width="960" height="600" alt="table3_rosenbrock_30D" src="https://github.com/user-attachments/assets/dc2675f8-d64d-42c6-a3c6-6df55a65a6e7" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/a258cb0b-9106-4a4d-a4ea-c5ffb160f487" /> | <img width="960" height="600" alt="table3_rosenbrock_100D" src="https://github.com/user-attachments/assets/a2f25feb-94b7-4a92-91fb-31f0715045be" /> |
-| **Griewank** |  |  |  |
+| **Griewank** | <img width="960" height="600" alt="table3_griewank_30D" src="https://github.com/user-attachments/assets/66892043-ad04-4d09-8c84-e4f66d62a4a9" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/65af3125-62ae-4fd3-8dbf-f2a3909ab620" /> |  |
 
 *像我貼的那篇一樣，左邊放論文的 table 235(沒做的記得省略)，右邊放我們跑出來的
 ### DQN
