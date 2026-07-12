@@ -52,7 +52,7 @@
 ### Q-Learning
 | 論文數據 | 實驗結果 |
 | :-----: | :--------: |
-| Table2 <img width="870" height="243" alt="image" src="https://github.com/user-attachments/assets/4728bfc1-9c60-4759-beb6-1a800826a88b" /> | Table2 |
+| Table2 <img width="870" height="243" alt="image" src="https://github.com/user-attachments/assets/4728bfc1-9c60-4759-beb6-1a800826a88b" /> | Table2 <img width="913" height="219" alt="image" src="https://github.com/user-attachments/assets/a2214797-c4cc-4d7e-a4d3-aa468f231ab9" /> |
 | Table3 <img width="871" height="241" alt="image" src="https://github.com/user-attachments/assets/2941e93f-d130-4c4a-bf33-906d43cd6869" /> | Table3 |
 
 ESA用Q-Learning各種收斂圖
