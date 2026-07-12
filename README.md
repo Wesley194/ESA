@@ -76,12 +76,14 @@ ESA各種收斂圖
 | **Rosenbrock** | <img width="960" height="600" alt="table3_rosenbrock_30D" src="https://github.com/user-attachments/assets/dc2675f8-d64d-42c6-a3c6-6df55a65a6e7" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/a258cb0b-9106-4a4d-a4ea-c5ffb160f487" /> | <img width="960" height="600" alt="table3_rosenbrock_100D" src="https://github.com/user-attachments/assets/a2f25feb-94b7-4a92-91fb-31f0715045be" /> |
 | **Griewank** | <img width="960" height="600" alt="table3_griewank_30D" src="https://github.com/user-attachments/assets/66892043-ad04-4d09-8c84-e4f66d62a4a9" /> | <img width="960" height="600" alt="table3_griewank_50D" src="https://github.com/user-attachments/assets/65af3125-62ae-4fd3-8dbf-f2a3909ab620" /> | <img width="960" height="600" alt="table3_rosenbrock_100D" src="https://github.com/user-attachments/assets/8888771f-9977-410b-a59f-5d9b4ab9d1d3" /> |
 
-*像我貼的那篇一樣，左邊放論文的 table 235(沒做的記得省略)，右邊放我們跑出來的
 ### DQN
-消融模式和table5
+#### DQN 做消融模式
+消融模式
+#### DQN 跑 table 5 的數據
+<p align="center">
+  <img src="./results/table5_DQN.jpg" width="600">
+</p>
 ### Q-Learning 與 DQN 成效對照
-這個數據我在跑，可以在看要不用放兩者的table5
-
 
 #### 兩者的收斂圖比較
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
