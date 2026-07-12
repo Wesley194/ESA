@@ -8,6 +8,7 @@
 - **scipy**
 - **pandas**
 - **torch**
+- **matplotlib**
 
 ---
 
