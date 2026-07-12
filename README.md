@@ -76,9 +76,14 @@ ESA用Q-Learning各種收斂圖
 消融模式和table5
 ### Q-Learning 與 DQN 成效對照
 這個數據我在跑，可以在看要不用放兩者的table5
-| Ellipsoid | Rosenbrock | griewank |
-| :---: | :---: | :---: |
-| ![圖片1](./convergence_plots/conv_ellipsoid_dim30.png) | ![圖片2](./convergence_plots/conv_rosenbrock_dim30.png) | ![圖片3](./convergence_plots/conv_griewank_dim30.png) |
+
+
+#### 兩者的收斂圖比較
+| <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
+| :--- | :---: | :---: | :---: |
+| **Ellipsoid** | <img src="./images/Ellipsoid_dim30.png" width="100%" alt="Ellipsoid 30D" /> | <img src="./images/Ellipsoid_dim50.png" width="100%" alt="Ellipsoid 50D" /> | <img src="./images/Ellipsoid_dim100.png" width="100%" alt="Ellipsoid 100D" /> |
+| **Rosenbrock** | <img src="./images/Rosenbrock_dim30.png" width="100%" alt="Rosenbrock 30D" /> | <img src="./images/Rosenbrock_dim50.png" width="100%" alt="Rosenbrock 50D" /> | <img src="./images/Rosenbrock_dim100.png" width="100%" alt="Rosenbrock 100D" /> |
+| **Griewank** | <img src="./images/Griewank_dim30.png" width="100%" alt="Griewank 30D" /> | <img src="./images/Griewank_dim50.png" width="100%" alt="Griewank 50D" /> | <img src="./images/Griewank_dim100.png" width="100%" alt="Griewank 100D" /> |
 ---
 
 ## 總結與未來展望 (Conclusion)
