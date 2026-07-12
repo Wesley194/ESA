@@ -55,7 +55,7 @@
 | Table2 <img width="870" height="243" alt="image" src="https://github.com/user-attachments/assets/4728bfc1-9c60-4759-beb6-1a800826a88b" /> | Table2 <img width="913" height="219" alt="image" src="https://github.com/user-attachments/assets/a2214797-c4cc-4d7e-a4d3-aa468f231ab9" /> |
 | Table3 <img width="871" height="241" alt="image" src="https://github.com/user-attachments/assets/2941e93f-d130-4c4a-bf33-906d43cd6869" /> | Table3 |
 
-ESA用Q-Learning各種收斂圖
+ESA各種收斂圖
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/02ed39ac-c124-422a-aeee-52c48aa0139a" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/badd72ad-f703-4643-81e9-988b354cf80d" /> | <img width="947" height="587" alt="image" src="https://github.com/user-attachments/assets/8a86ab21-bf2d-4901-9766-a549f6c29e94" /> |
