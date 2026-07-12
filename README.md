@@ -67,7 +67,7 @@ ESA用Q-Learning各種收斂圖
 | :--- | :---: | :---: | :---: |
 | **Ellipsoid** | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/44f951af-1327-4ea3-a814-9b023ee3c3e5" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/3818c716-f483-4cae-a4bd-b32c6553563f" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/837392c6-f6b6-49f5-abfe-f7212edad1f3" /> |
 | **Rosenbrock** | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/550cb37d-ca24-42ac-a916-bad3f3e4d137" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/44134c43-3ca8-41ee-be14-080ac03943a0" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/f626614a-bb93-4bfc-9308-babe171b3ee2" /> |
-| **Griewank** |  |  |  |
+| **Griewank** | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/a76adcdc-7ba1-4c75-9822-f06b2ee55e48" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/93c9bf73-c755-451e-a8b6-fa9f352c1a2a" /> | <img width="960" height="600" alt="image" src="https://github.com/user-attachments/assets/eafd6027-48f5-4720-98a3-0a8ff446d9c6" /> |
 
 去一採樣策略收斂圖
 | <sup>函數</sup> ＼ <sub>維度</sub> | 30D | 50D | 100D |
